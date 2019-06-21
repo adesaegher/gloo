@@ -39,7 +39,7 @@ func (m *GfuncPerRoute) Reset()         { *m = GfuncPerRoute{} }
 func (m *GfuncPerRoute) String() string { return proto.CompactTextString(m) }
 func (*GfuncPerRoute) ProtoMessage()    {}
 func (*GfuncPerRoute) Descriptor() ([]byte, []int) {
-	return fileDescriptor_1f5303cab7a20d6f, []int{0}
+	return fileDescriptorSpec, []int{0}
 }
 func (m *GfuncPerRoute) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_GfuncPerRoute.Unmarshal(m, b)

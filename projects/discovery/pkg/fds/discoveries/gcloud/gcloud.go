@@ -24,6 +24,10 @@ const (
 	// expected map identifiers for secrets
 	gcloudAccessKey = "access_key"
 	gcloudJsonKey = "json_key"
+        // v1beta2: https://cloud.google.com/functions/docs/reference/rest/v1beta2/projects.locations.functions
+        statusReady = "READY"
+        // v1 status: https://cloud.google.com/functions/docs/reference/rest/v1/projects.locations.functions
+        statusActive = "ACTIVE"
 )
 
 type GcloudGfuncFunctionDiscoveryFactory struct {
@@ -134,7 +138,7 @@ func (f *GcloudGfuncFunctionDiscovery) DetectFunctionsOnce(ctx context.Context, 
 		return nil, errors.Errorf("%s not a valid string", gcloudAccessKey)
 	}
 
-        jsonKey := gcloudSecrets.Gcloud.JsonKey
+        jsonKey := gcloudSecret.Gcloud.JsonKey
         if jsonKey != "" && !utf8.Valid([]byte(jsonKey)) {
                 return nil, errors.Errorf("%s not a valid string", gcloudJsonKey)
         }
@@ -150,7 +154,7 @@ func (f *GcloudGfuncFunctionDiscovery) DetectFunctionsOnce(ctx context.Context, 
         }
 
         locationID := "-" // all locations
-        parent := fmt.Sprintf("projects/%s/locations/%s", gcloudSpec.ProjectId, locationID)
+        parent := fmt.Sprintf("projects/%s/locations/%s", gfuncSpec.ProjectId, locationID)
         listCall := gcf.Projects.Locations.Functions.List(parent)
         var results []*cloudfunctions.CloudFunction
         if err := listCall.Pages(ctx, func(response *cloudfunctions.ListFunctionsResponse) error {
@@ -168,8 +172,8 @@ func (f *GcloudGfuncFunctionDiscovery) DetectFunctionsOnce(ctx context.Context, 
         return convertGfuncsToFunctionSpec(results), nil
 }
 
-func convertGfuncsToFunctionSpec(results []*cloudfunctions.CloudFunction) []*v1.Function {
-        var funcs []*v1.Function
+func convertGfuncsToFunctionSpec(results []*cloudfunctions.CloudFunction) []*gloogcloud.GfuncFunctionSpec {
+        var newfunctions []*gloogcloud.GfuncFunctionSpec
         for _, gFunc := range results {
                newfunctions = append(newfunctions, &gloogcloud.GfuncFunctionSpec{
                         GfuncFunctionName: gFunc.Name,

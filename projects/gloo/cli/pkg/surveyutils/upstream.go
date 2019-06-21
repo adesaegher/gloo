@@ -60,6 +60,10 @@ func getGcloudInteractive(gcloud *options.InputGcloudSpec) error {
 		"What region are the Gcloud services in for this upstream?",
 		&gcloud.Region,
 		"us-east-1",
+	); err != nil {
+		return err
+	}
+	if err := cliutil.GetStringInputDefault(
 		"What is the Gcloud services project_id for this upstream?",
 		&gcloud.ProjectId,
 		"XXXXXXXX",

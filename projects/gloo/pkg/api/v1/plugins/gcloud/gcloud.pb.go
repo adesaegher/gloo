@@ -212,7 +212,6 @@ func (m *DestinationSpec) GetResponseTransformation() bool {
 }
 
 func init() {
-	proto.RegisterEnum("gcloud.plugins.gloo.solo.io.DestinationSpec_InvocationStyle", DestinationSpec_InvocationStyle_name, DestinationSpec_InvocationStyle_value)
 	proto.RegisterType((*UpstreamSpec)(nil), "gcloud.plugins.gloo.solo.io.UpstreamSpec")
 	proto.RegisterType((*GfuncFunctionSpec)(nil), "gcloud.plugins.gloo.solo.io.GfuncFunctionSpec")
 	proto.RegisterType((*DestinationSpec)(nil), "gcloud.plugins.gloo.solo.io.DestinationSpec")
@@ -302,9 +301,6 @@ func (this *GfuncFunctionSpec) Equal(that interface{}) bool {
 	if this.GfuncFunctionName != that1.GfuncFunctionName {
 		return false
 	}
-	if this.Qualifier != that1.Qualifier {
-		return false
-	}
 	if !bytes.Equal(this.XXX_unrecognized, that1.XXX_unrecognized) {
 		return false
 	}
@@ -330,9 +326,6 @@ func (this *DestinationSpec) Equal(that interface{}) bool {
 		return false
 	}
 	if this.LogicalName != that1.LogicalName {
-		return false
-	}
-	if this.InvocationStyle != that1.InvocationStyle {
 		return false
 	}
 	if this.ResponseTransformation != that1.ResponseTransformation {

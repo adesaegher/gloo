@@ -194,7 +194,7 @@ func upstreamSpecFromOpts(input options.InputUpstream) (*v1.UpstreamSpec, error)
 		if svcSpec != nil {
 			return nil, errors.Errorf("%v does not support service spec", input.UpstreamType)
 		}
-		if input.gcloud.Secret.Namespace == "" {
+		if input.Gcloud.Secret.Namespace == "" {
 			return nil, errors.Errorf("gcloud secret namespace must not be empty")
 		}
 		if input.Gcloud.Secret.Name == "" {

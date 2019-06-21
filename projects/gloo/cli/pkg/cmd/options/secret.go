@@ -21,7 +21,7 @@ type AwsSecret struct {
 
 type GcloudSecret struct {
 	AccessKey string
-	jsonKey string
+	JsonKey string
 }
 
 type AzureSecret struct {

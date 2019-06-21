@@ -3,7 +3,6 @@ package gcloud
 import (
 	"context"
 	"fmt"
-	"net/url"
 	"unicode/utf8"
 
 	envoyapi "github.com/envoyproxy/go-control-plane/envoy/api/v2"
@@ -107,7 +106,6 @@ func (p *plugin) ProcessUpstream(params plugins.Params, in *v1.Upstream, out *en
 	}
 
 	lpe := &GfuncProtocolExtension{
-		Host:      gfuncHostname,
 		Region:    upstreamSpec.Gcloud.Region,
 		AccessKey: accessKey,
 		JsonKey: jsonKey,

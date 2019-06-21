@@ -194,7 +194,7 @@ type InputAwsSpec struct {
 	Secret core.ResourceRef
 }
 
-type InputgcloudSpec struct {
+type InputGcloudSpec struct {
 	Region string
 	ProjectId string
 	Secret core.ResourceRef

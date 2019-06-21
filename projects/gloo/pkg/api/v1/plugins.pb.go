@@ -279,7 +279,7 @@ type DestinationSpec_Grpc struct {
 	Grpc *grpc.DestinationSpec `protobuf:"bytes,4,opt,name=grpc,proto3,oneof"`
 }
 type DestinationSpec_Gcloud struct {
-	Aws *gcloud.DestinationSpec `protobuf:"bytes,5,opt,name=gcloud,proto3,oneof"`
+	Gcloud *gcloud.DestinationSpec `protobuf:"bytes,5,opt,name=gcloud,proto3,oneof"`
 }
 
 func (*DestinationSpec_Aws) isDestinationSpec_DestinationType()   {}
@@ -531,7 +531,7 @@ type UpstreamSpec_Consul struct {
 	Consul *consul.UpstreamSpec `protobuf:"bytes,5,opt,name=consul,proto3,oneof"`
 }
 type UpstreamSpec_Gcloud struct {
-	Aws *gcloud.UpstreamSpec `protobuf:"bytes,6,opt,name=gcloud,proto3,oneof"`
+	Gcloud *gcloud.UpstreamSpec `protobuf:"bytes,6,opt,name=gcloud,proto3,oneof"`
 }
 
 func (*UpstreamSpec_Kube) isUpstreamSpec_UpstreamType()   {}
