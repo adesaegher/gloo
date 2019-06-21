@@ -10,12 +10,18 @@ import (
 type Secret struct {
 	TlsSecret   TlsSecret
 	AwsSecret   AwsSecret
+	GcloudSecret   GcloudSecret
 	AzureSecret AzureSecret
 }
 
 type AwsSecret struct {
 	AccessKey string
 	SecretKey string
+}
+
+type GcloudSecret struct {
+	AccessKey string
+	jsonKey string
 }
 
 type AzureSecret struct {

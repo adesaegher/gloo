@@ -18,6 +18,7 @@ import (
 	v1 "github.com/solo-io/gloo/projects/gloo/pkg/api/v1"
 	"github.com/solo-io/gloo/projects/gloo/pkg/api/v1/plugins"
 	"github.com/solo-io/gloo/projects/gloo/pkg/api/v1/plugins/aws"
+	"github.com/solo-io/gloo/projects/gloo/pkg/api/v1/plugins/gcloud"
 	"github.com/solo-io/gloo/projects/gloo/pkg/api/v1/plugins/azure"
 	"github.com/solo-io/gloo/projects/gloo/pkg/api/v1/plugins/consul"
 	"github.com/solo-io/gloo/projects/gloo/pkg/api/v1/plugins/grpc"
@@ -60,6 +61,13 @@ func Upstream(opts *options.Options, optionsFunc ...cliutils.OptionsFunc) *cobra
 			"AWS Upstreams represent a set of AWS Lambda Functions for a Region that can be routed to with Gloo. "+
 				"AWS Upstreams require a valid set of AWS Credentials to be provided. "+
 				"These should be uploaded to Gloo using `glooctl create secret aws`",
+		),
+		createUpstreamSubcommand(opts,
+			options.UpstreamType_Gcloud,
+			"Create a Gcloud Upstream",
+			"gcloud Upstreams represent a set of Goocle Cloud Functions for a Region that can be routed to with Gloo. "+
+				"gcloud Upstreams require a valid set of Gcloud Credentials to be provided. "+
+				"These should be uploaded to Gloo using `glooctl create secret gcloud`",
 		),
 		createUpstreamSubcommand(opts,
 			options.UpstreamType_Azure,
@@ -180,6 +188,22 @@ func upstreamSpecFromOpts(input options.InputUpstream) (*v1.UpstreamSpec, error)
 			Aws: &aws.UpstreamSpec{
 				Region:    input.Aws.Region,
 				SecretRef: input.Aws.Secret,
+			},
+		}
+	case options.UpstreamType_Gcloud:
+		if svcSpec != nil {
+			return nil, errors.Errorf("%v does not support service spec", input.UpstreamType)
+		}
+		if input.gcloud.Secret.Namespace == "" {
+			return nil, errors.Errorf("gcloud secret namespace must not be empty")
+		}
+		if input.Gcloud.Secret.Name == "" {
+			return nil, errors.Errorf("gcloud secret name must not be empty")
+		}
+		spec.UpstreamType = &v1.UpstreamSpec_Gcloud{
+			Gcloud: &gcloud.UpstreamSpec{
+				Region:    input.Gcloud.Region,
+				SecretRef: input.Gcloud.Secret,
 			},
 		}
 	case options.UpstreamType_Azure:

@@ -127,9 +127,15 @@ func (p *PrefixRewrite) Type() string {
 type DestinationSpec struct {
 	Aws  AwsDestinationSpec
 	Rest RestDestinationSpec
+	Gcloud GcloudDestinationSpec
 }
 
 type AwsDestinationSpec struct {
+	LogicalName            string
+	ResponseTransformation bool
+}
+
+type GcloudDestinationSpec struct {
 	LogicalName            string
 	ResponseTransformation bool
 }
@@ -154,6 +160,7 @@ type InputVirtualService struct {
 
 const (
 	UpstreamType_Aws    = "aws"
+	UpstreamType_Gcloud = "gcloud"
 	UpstreamType_Azure  = "azure"
 	UpstreamType_Consul = "consul"
 	UpstreamType_Kube   = "kube"
@@ -162,6 +169,7 @@ const (
 
 var UpstreamTypes = []string{
 	UpstreamType_Aws,
+	UpstreamType_Gcloud,
 	UpstreamType_Azure,
 	UpstreamType_Consul,
 	UpstreamType_Kube,
@@ -171,6 +179,7 @@ var UpstreamTypes = []string{
 type InputUpstream struct {
 	UpstreamType string
 	Aws          InputAwsSpec
+	Gcloud       InputGcloudSpec
 	Azure        InputAzureSpec
 	Consul       InputConsulSpec
 	Kube         InputKubeSpec
@@ -182,6 +191,12 @@ type InputUpstream struct {
 
 type InputAwsSpec struct {
 	Region string
+	Secret core.ResourceRef
+}
+
+type InputgcloudSpec struct {
+	Region string
+	ProjectId string
 	Secret core.ResourceRef
 }
 

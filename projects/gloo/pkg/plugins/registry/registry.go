@@ -4,6 +4,7 @@ import (
 	"github.com/solo-io/gloo/projects/gloo/pkg/bootstrap"
 	"github.com/solo-io/gloo/projects/gloo/pkg/plugins"
 	"github.com/solo-io/gloo/projects/gloo/pkg/plugins/aws"
+	"github.com/solo-io/gloo/projects/gloo/pkg/plugins/gcloud"
 	"github.com/solo-io/gloo/projects/gloo/pkg/plugins/azure"
 	"github.com/solo-io/gloo/projects/gloo/pkg/plugins/basicroute"
 	"github.com/solo-io/gloo/projects/gloo/pkg/plugins/consul"
@@ -35,6 +36,7 @@ var globalRegistry = func(opts bootstrap.Opts, pluginExtensions ...plugins.Plugi
 		upstreamssl.NewPlugin(),
 		azure.NewPlugin(&transformationPlugin.RequireTransformationFilter),
 		aws.NewPlugin(&transformationPlugin.RequireTransformationFilter),
+		gcloud.NewPlugin(&transformationPlugin.RequireTransformationFilter),
 		rest.NewPlugin(&transformationPlugin.RequireTransformationFilter),
 		hcm.NewPlugin(),
 		static.NewPlugin(),

@@ -1,0 +1,50 @@
+syntax = "proto3";
+package gcloud.plugins.gloo.solo.io;
+
+option go_package = "github.com/solo-io/gloo/projects/gloo/pkg/api/v1/plugins/gcloud";
+
+import "gogoproto/gogo.proto";
+option (gogoproto.equal_all) = true;
+
+import "github.com/solo-io/solo-kit/api/v1/ref.proto";
+
+// Upstream Spec for Gcloud Gfunc Upstreams
+// Gcloud Upstreams represent a collection of Gfunc Functions for a particular Gcloud Account (IAM Role or User account)
+// in a particular region
+message UpstreamSpec {
+    // The Gcloud Region where the desired Gfunc Functions exxist
+    string region = 1;
+
+    // A [Gloo Secret Ref](https://gloo.solo.io/introduction/concepts/#Secrets) to an Gcloud Secret
+    // Gcloud Secrets can be created with `glooctl secret create gcloud ...`
+    // If the secret is created manually, it must conform to the following structure:
+    //  ```
+    //  access_key: <gcloud access key>
+    //  json_key: <gcloud secret key>
+    //  ```
+    core.solo.io.ResourceRef secret_ref = 2 [(gogoproto.nullable) = false];
+
+    // The list of Gfunc Functions contained within this region.
+    // This list will be automatically populated by Gloo if discovery is enabled for Gcloud Gfunc Functions
+    repeated GfuncFunctionSpec gfunc_functions = 3;
+}
+
+// Each Gfunc Function Spec contains data necessary for Gloo to invoke Gfunc functions:
+// - name of the function
+// - qualifier for the function
+message GfuncFunctionSpec {
+    // the logical name gloo should associate with this function. if left empty, it will default to
+    // gfunc_function_name+qualifier
+    string logical_name = 1;
+
+    // The Name of the Gfunc Function as it appears in the Gcloud Gfunc Portal
+    string gfunc_function_name  = 2;
+}
+
+// Each Gfunc Function Spec contains data necessary for Gloo to invoke Gfunc functions
+message DestinationSpec {
+    // The Logical Name of the GfuncFunctionSpec to be invoked.
+    string logical_name = 1;
+    // de-jsonify response bodies returned from gcloud gfunc
+    bool response_transformation = 5;
+}

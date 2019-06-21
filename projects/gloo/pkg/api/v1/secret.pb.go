@@ -93,11 +93,15 @@ type Secret_Tls struct {
 type Secret_Extension struct {
 	Extension *Extension `protobuf:"bytes,4,opt,name=extension,proto3,oneof"`
 }
+type Secret_Gcloud struct {
+	Gcloud *GcloudSecret `protobuf:"bytes,5,opt,name=gcloud,proto3,oneof"`
+}
 
 func (*Secret_Aws) isSecret_Kind()       {}
 func (*Secret_Azure) isSecret_Kind()     {}
 func (*Secret_Tls) isSecret_Kind()       {}
 func (*Secret_Extension) isSecret_Kind() {}
+func (*Secret_Gcloud) isSecret_Kind()    {}
 
 func (m *Secret) GetKind() isSecret_Kind {
 	if m != nil {
@@ -134,6 +138,13 @@ func (m *Secret) GetExtension() *Extension {
 	return nil
 }
 
+func (m *Secret) GetGcloud() *GcloudSecret {
+	if x, ok := m.GetKind().(*Secret_Gcloud); ok {
+		return x.Gcloud
+	}
+	return nil
+}
+
 func (m *Secret) GetMetadata() core.Metadata {
 	if m != nil {
 		return m.Metadata
@@ -148,6 +159,7 @@ func (*Secret) XXX_OneofFuncs() (func(msg proto.Message, b *proto.Buffer) error,
 		(*Secret_Azure)(nil),
 		(*Secret_Tls)(nil),
 		(*Secret_Extension)(nil),
+		(*Secret_Gcloud)(nil),
 	}
 }
 
@@ -173,6 +185,11 @@ func _Secret_OneofMarshaler(msg proto.Message, b *proto.Buffer) error {
 	case *Secret_Extension:
 		_ = b.EncodeVarint(4<<3 | proto.WireBytes)
 		if err := b.EncodeMessage(x.Extension); err != nil {
+			return err
+		}
+	case *Secret_Gcloud:
+		_ = b.EncodeVarint(1<<3 | proto.WireBytes)
+		if err := b.EncodeMessage(x.Gcloud); err != nil {
 			return err
 		}
 	case nil:
@@ -217,6 +234,14 @@ func _Secret_OneofUnmarshaler(msg proto.Message, tag, wire int, b *proto.Buffer)
 		err := b.DecodeMessage(msg)
 		m.Kind = &Secret_Extension{msg}
 		return true, err
+	case 5: // kind.gcloud
+		if wire != proto.WireBytes {
+			return true, proto.ErrInternalBadWireType
+		}
+		msg := new(GcloudSecret)
+		err := b.DecodeMessage(msg)
+		m.Kind = &Secret_Gcloud{msg}
+		return true, err
 	default:
 		return false, nil
 	}
@@ -243,6 +268,11 @@ func _Secret_OneofSizer(msg proto.Message) (n int) {
 		n += s
 	case *Secret_Extension:
 		s := proto.Size(x.Extension)
+		n += 1 // tag and wire
+		n += proto.SizeVarint(uint64(s))
+		n += s
+	case *Secret_Gcloud:
+		s := proto.Size(x.Gcloud)
 		n += 1 // tag and wire
 		n += proto.SizeVarint(uint64(s))
 		n += s
@@ -295,6 +325,52 @@ func (m *AwsSecret) GetAccessKey() string {
 func (m *AwsSecret) GetSecretKey() string {
 	if m != nil {
 		return m.SecretKey
+	}
+	return ""
+}
+
+type GcloudSecret struct {
+	AccessKey            string   `protobuf:"bytes,1,opt,name=access_key,json=accessKey,proto3" json:"access_key,omitempty"`
+	JsonKey            string   `protobuf:"bytes,2,opt,name=json_key,json=jsonKey,proto3" json:"json_key,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *GcloudSecret) Reset()         { *m = GcloudSecret{} }
+func (m *GcloudSecret) String() string { return proto.CompactTextString(m) }
+func (*GcloudSecret) ProtoMessage()    {}
+func (*GcloudSecret) Descriptor() ([]byte, []int) {
+	return fileDescriptor_c2f79c35f1213791, []int{1}
+}
+func (m *GcloudSecret) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_GcloudSecret.Unmarshal(m, b)
+}
+func (m *GcloudSecret) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_GcloudSecret.Marshal(b, m, deterministic)
+}
+func (m *GcloudSecret) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_GcloudSecret.Merge(m, src)
+}
+func (m *GcloudSecret) XXX_Size() int {
+	return xxx_messageInfo_GcloudSecret.Size(m)
+}
+func (m *GcloudSecret) XXX_DiscardUnknown() {
+	xxx_messageInfo_GcloudSecret.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_GcloudSecret proto.InternalMessageInfo
+
+func (m *GcloudSecret) GetAccessKey() string {
+	if m != nil {
+		return m.AccessKey
+	}
+	return ""
+}
+
+func (m *GcloudSecret) GetJsonKey() string {
+	if m != nil {
+		return m.JsonKey
 	}
 	return ""
 }
@@ -397,6 +473,7 @@ func init() {
 	proto.RegisterType((*AzureSecret)(nil), "gloo.solo.io.AzureSecret")
 	proto.RegisterMapType((map[string]string)(nil), "gloo.solo.io.AzureSecret.ApiKeysEntry")
 	proto.RegisterType((*TlsSecret)(nil), "gloo.solo.io.TlsSecret")
+	proto.RegisterType((*GcloudSecret)(nil), "gloo.solo.io.GcloudSecret")
 }
 
 func init() {
@@ -496,6 +573,30 @@ func (this *Secret_Aws) Equal(that interface{}) bool {
 	}
 	return true
 }
+func (this *Secret_Gcloud) Equal(that interface{}) bool {
+	if that == nil {
+		return this == nil
+	}
+
+	that1, ok := that.(*Secret_Gcloud)
+	if !ok {
+		that2, ok := that.(Secret_Gcloud)
+		if ok {
+			that1 = &that2
+		} else {
+			return false
+		}
+	}
+	if that1 == nil {
+		return this == nil
+	} else if this == nil {
+		return false
+	}
+	if !this.Gcloud.Equal(that1.Gcloud) {
+		return false
+	}
+	return true
+}
 func (this *Secret_Azure) Equal(that interface{}) bool {
 	if that == nil {
 		return this == nil
@@ -591,6 +692,36 @@ func (this *AwsSecret) Equal(that interface{}) bool {
 		return false
 	}
 	if this.SecretKey != that1.SecretKey {
+		return false
+	}
+	if !bytes.Equal(this.XXX_unrecognized, that1.XXX_unrecognized) {
+		return false
+	}
+	return true
+}
+func (this *GcloudSecret) Equal(that interface{}) bool {
+	if that == nil {
+		return this == nil
+	}
+
+	that1, ok := that.(*GcloudSecret)
+	if !ok {
+		that2, ok := that.(GcloudSecret)
+		if ok {
+			that1 = &that2
+		} else {
+			return false
+		}
+	}
+	if that1 == nil {
+		return this == nil
+	} else if this == nil {
+		return false
+	}
+	if this.AccessKey != that1.AccessKey {
+		return false
+	}
+	if this.JsonKey != that1.JsonKey {
 		return false
 	}
 	if !bytes.Equal(this.XXX_unrecognized, that1.XXX_unrecognized) {

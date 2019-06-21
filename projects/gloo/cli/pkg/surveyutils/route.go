@@ -12,6 +12,7 @@ import (
 	v1 "github.com/solo-io/gloo/projects/gloo/pkg/api/v1"
 	"github.com/solo-io/gloo/projects/gloo/pkg/api/v1/plugins"
 	"github.com/solo-io/gloo/projects/gloo/pkg/api/v1/plugins/aws"
+	"github.com/solo-io/gloo/projects/gloo/pkg/api/v1/plugins/gcloud"
 	"github.com/solo-io/gloo/projects/gloo/pkg/api/v1/plugins/rest"
 	"github.com/solo-io/solo-kit/pkg/api/v1/clients"
 	"github.com/solo-io/solo-kit/pkg/api/v1/resources/core"
@@ -182,6 +183,22 @@ func getPluginsInteractive(dest *options.RoutePlugins) error {
 func getAwsDestinationSpecInteractive(spec *options.AwsDestinationSpec, ut *aws.UpstreamSpec) error {
 	var fnNames []string
 	for _, fn := range ut.LambdaFunctions {
+		fnNames = append(fnNames, fn.LogicalName)
+	}
+	if err := cliutil.ChooseFromList(
+		"which function should this route invoke? ",
+		&spec.LogicalName,
+		fnNames,
+	); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func getGcloudDestinationSpecInteractive(spec *options.GcloudDestinationSpec, ut *gcloud.UpstreamSpec) error {
+	var fnNames []string
+	for _, fn := range ut.GfuncFunctions {
 		fnNames = append(fnNames, fn.LogicalName)
 	}
 	if err := cliutil.ChooseFromList(

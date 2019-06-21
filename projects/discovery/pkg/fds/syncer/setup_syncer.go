@@ -5,6 +5,7 @@ import (
 
 	"github.com/solo-io/gloo/projects/discovery/pkg/fds"
 	"github.com/solo-io/gloo/projects/discovery/pkg/fds/discoveries/aws"
+	"github.com/solo-io/gloo/projects/discovery/pkg/fds/discoveries/gcloud"
 	"github.com/solo-io/gloo/projects/discovery/pkg/fds/discoveries/grpc"
 	"github.com/solo-io/gloo/projects/discovery/pkg/fds/discoveries/swagger"
 	v1 "github.com/solo-io/gloo/projects/gloo/pkg/api/v1"
@@ -46,6 +47,9 @@ func RunFDS(opts bootstrap.Opts) error {
 	// TODO: unhardcode
 	functionalPlugins := []fds.FunctionDiscoveryFactory{
 		&aws.AWSLambdaFunctionDiscoveryFactory{
+			PollingTime: time.Second,
+		},
+		&gcloud.GcloudGfuncFunctionDiscoveryFactory{
 			PollingTime: time.Second,
 		},
 		&swagger.SwaggerFunctionDiscoveryFactory{

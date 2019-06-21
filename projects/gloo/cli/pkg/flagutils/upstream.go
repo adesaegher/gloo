@@ -22,6 +22,15 @@ func AddUpstreamFlags(set *pflag.FlagSet, upstreamType string, upstream *options
 		set.StringVar(&upstream.Aws.Secret.Namespace, "aws-secret-namespace", defaults.GlooSystem,
 			"namespace where the AWS secret lives. See `glooctl create secret aws --help` "+
 				"for help creating secrets")
+	case options.UpstreamType_Gcloud:
+		set.StringVar(&upstream.Gcloud.Region, "gcloud-region", "us-east-1",
+			"region for Gcloud services this upstream utilize")
+		set.StringVar(&upstream.Gcloud.Secret.Name, "gcloud-secret-name", "",
+			"name of a secret containing Gcloud credentials created with glooctl. See `glooctl create secret gcloud --help` "+
+				"for help creating secrets")
+		set.StringVar(&upstream.Gcloud.Secret.Namespace, "gcloud-secret-namespace", defaults.GlooSystem,
+			"namespace where the Gcloud secret lives. See `glooctl create secret gcloud --help` "+
+				"for help creating secrets")
 	case options.UpstreamType_Azure:
 		set.StringVar(&upstream.Azure.FunctionAppName, "azure-app-name", "",
 			"name of the Azure Functions app to associate with this upstream")

@@ -55,6 +55,52 @@ func getAwsInteractive(aws *options.InputAwsSpec) error {
 	return nil
 }
 
+func getGcloudInteractive(gcloud *options.InputGcloudSpec) error {
+	if err := cliutil.GetStringInputDefault(
+		"What region are the Gcloud services in for this upstream?",
+		&gcloud.Region,
+		"us-east-1",
+		"What is the Gcloud services project_id for this upstream?",
+		&gcloud.ProjectId,
+		"XXXXXXXX",
+	); err != nil {
+		return err
+	}
+
+	// collect secrets list
+	secretClient := helpers.MustSecretClient()
+	secretsByKey := make(map[string]core.ResourceRef)
+	var secretKeys []string
+	for _, ns := range helpers.MustGetNamespaces() {
+		secretList, err := secretClient.List(ns, clients.ListOpts{})
+		if err != nil {
+			return err
+		}
+		for _, secret := range secretList {
+			if _, ok := secret.Kind.(*v1.Secret_Gcloud); !ok {
+				continue
+			}
+			ref := secret.Metadata.Ref()
+			secretsByKey[ref.Key()] = ref
+			secretKeys = append(secretKeys, ref.Key())
+		}
+	}
+	if len(secretKeys) == 0 {
+		return errors.Errorf("no Gcloud secrets found. create an Gcloud credentials secret using " +
+			"glooctl create secret gcloud --help")
+	}
+	var secretKey string
+	if err := cliutil.ChooseFromList(
+		"Choose an Gcloud credentials secret to link to this upstream: ",
+		&secretKey,
+		secretKeys,
+	); err != nil {
+		return err
+	}
+	gcloud.Secret = secretsByKey[secretKey]
+	return nil
+}
+
 func getAzureInteractive(azure *options.InputAzureSpec) error {
 	if err := cliutil.GetStringInputDefault(
 		"What is the name of the Azure Functions app to associate with this upstream?",

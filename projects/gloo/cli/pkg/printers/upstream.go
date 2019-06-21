@@ -51,6 +51,8 @@ func upstreamType(up *v1.Upstream) string {
 		return "Kubernetes"
 	case *v1.UpstreamSpec_Static:
 		return "Static"
+	case *v1.UpstreamSpec_Gcloud:
+		return "Gcloud"
 	default:
 		return "Unknown"
 	}
@@ -70,6 +72,21 @@ func upstreamDetails(up *v1.Upstream) []string {
 		add(
 			fmt.Sprintf("region: %v", usType.Aws.Region),
 			fmt.Sprintf("secret: %v", usType.Aws.SecretRef.Key()),
+		)
+		for i := range functions {
+			if i == 0 {
+				add("functions:")
+			}
+			add(fmt.Sprintf("- %v", functions[i]))
+		}
+	case *v1.UpstreamSpec_Gcloud:
+		var functions []string
+		for _, fn := range usType.Gcloud.GfuncFunctions {
+			functions = append(functions, fn.GfuncFunctionName)
+		}
+		add(
+			fmt.Sprintf("region: %v", usType.Gcloud.Region),
+			fmt.Sprintf("secret: %v", usType.Gcloud.SecretRef.Key()),
 		)
 		for i := range functions {
 			if i == 0 {

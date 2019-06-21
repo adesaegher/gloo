@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+// TODO(yuval-k): use submodule and not copy pasted version.
+
+
+package envoy.config.filter.http.gcloud.v2;
+
+option go_package = "github.com/solo-io/gloo/projects/gloo/pkg/plugins/gcloud";
+
+import "validate/validate.proto";
+
+// [#protodoc-title: Gcloud Gfunc]
+// Gcloud Gfunc
+
+// Gcloud Gfunc contains the configuration necessary to perform transform regular http calls to
+// Gcloud Gfunc invocations.
+message GfuncPerRoute {
+  // The name of the function
+  string name = 1 [ (validate.rules).string.min_bytes = 1 ];
+  // URL is the HTTP Trigger URL assigned to the function in the Google Cloud Functions UI
+  string url = 2 [ (validate.rules).string.min_bytes = 1 ];
+}
+
+message GfuncProtocolExtension {
+    // The Google Cloud Platform project id where the functions are contained
+    string project_id = 1 [ (validate.rules).string.min_bytes = 1 ];
+    // The region for this cluster
+    string region = 2 [ (validate.rules).string.min_bytes = 1 ];
+    // The access_key for Gcloud this cluster
+    string access_key = 3 [ (validate.rules).string.min_bytes = 1 ];
+    // The json_key for Gcloud this cluster
+    string json_key = 4 [ (validate.rules).string.min_bytes = 1 ];
+}

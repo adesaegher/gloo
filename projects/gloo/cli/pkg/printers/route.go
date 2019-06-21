@@ -120,6 +120,8 @@ func Destinations(d *gloov1.Destination) string {
 		return "grpc"
 	case *gloov1.DestinationSpec_Rest:
 		return "rest"
+	case *gloov1.DestinationSpec_Gcloud:
+		return "gcloud"
 	default:
 		return "unknown"
 	}

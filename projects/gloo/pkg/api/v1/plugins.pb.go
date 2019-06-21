@@ -13,6 +13,7 @@ import (
 	proto "github.com/gogo/protobuf/proto"
 	_ "github.com/gogo/protobuf/types"
 	aws "github.com/solo-io/gloo/projects/gloo/pkg/api/v1/plugins/aws"
+	gcloud "github.com/solo-io/gloo/projects/gloo/pkg/api/v1/plugins/gcloud"
 	azure "github.com/solo-io/gloo/projects/gloo/pkg/api/v1/plugins/azure"
 	consul "github.com/solo-io/gloo/projects/gloo/pkg/api/v1/plugins/consul"
 	faultinjection "github.com/solo-io/gloo/projects/gloo/pkg/api/v1/plugins/faultinjection"
@@ -277,11 +278,15 @@ type DestinationSpec_Rest struct {
 type DestinationSpec_Grpc struct {
 	Grpc *grpc.DestinationSpec `protobuf:"bytes,4,opt,name=grpc,proto3,oneof"`
 }
+type DestinationSpec_Gcloud struct {
+	Aws *gcloud.DestinationSpec `protobuf:"bytes,5,opt,name=gcloud,proto3,oneof"`
+}
 
 func (*DestinationSpec_Aws) isDestinationSpec_DestinationType()   {}
 func (*DestinationSpec_Azure) isDestinationSpec_DestinationType() {}
 func (*DestinationSpec_Rest) isDestinationSpec_DestinationType()  {}
 func (*DestinationSpec_Grpc) isDestinationSpec_DestinationType()  {}
+func (*DestinationSpec_Gcloud) isDestinationSpec_DestinationType()   {}
 
 func (m *DestinationSpec) GetDestinationType() isDestinationSpec_DestinationType {
 	if m != nil {
@@ -318,6 +323,13 @@ func (m *DestinationSpec) GetGrpc() *grpc.DestinationSpec {
 	return nil
 }
 
+func (m *DestinationSpec) GetGcloud() *gcloud.DestinationSpec {
+	if x, ok := m.GetDestinationType().(*DestinationSpec_Gcloud); ok {
+		return x.Gcloud
+	}
+	return nil
+}
+
 // XXX_OneofFuncs is for the internal use of the proto package.
 func (*DestinationSpec) XXX_OneofFuncs() (func(msg proto.Message, b *proto.Buffer) error, func(msg proto.Message, tag, wire int, b *proto.Buffer) (bool, error), func(msg proto.Message) (n int), []interface{}) {
 	return _DestinationSpec_OneofMarshaler, _DestinationSpec_OneofUnmarshaler, _DestinationSpec_OneofSizer, []interface{}{
@@ -325,6 +337,7 @@ func (*DestinationSpec) XXX_OneofFuncs() (func(msg proto.Message, b *proto.Buffe
 		(*DestinationSpec_Azure)(nil),
 		(*DestinationSpec_Rest)(nil),
 		(*DestinationSpec_Grpc)(nil),
+		(*DestinationSpec_Gcloud)(nil),
 	}
 }
 
@@ -350,6 +363,11 @@ func _DestinationSpec_OneofMarshaler(msg proto.Message, b *proto.Buffer) error {
 	case *DestinationSpec_Grpc:
 		_ = b.EncodeVarint(4<<3 | proto.WireBytes)
 		if err := b.EncodeMessage(x.Grpc); err != nil {
+			return err
+		}
+	case *DestinationSpec_Gcloud:
+		_ = b.EncodeVarint(1<<3 | proto.WireBytes)
+		if err := b.EncodeMessage(x.Gcloud); err != nil {
 			return err
 		}
 	case nil:
@@ -394,6 +412,14 @@ func _DestinationSpec_OneofUnmarshaler(msg proto.Message, tag, wire int, b *prot
 		err := b.DecodeMessage(msg)
 		m.DestinationType = &DestinationSpec_Grpc{msg}
 		return true, err
+	case 5: // destination_type.gcloud
+		if wire != proto.WireBytes {
+			return true, proto.ErrInternalBadWireType
+		}
+		msg := new(gcloud.DestinationSpec)
+		err := b.DecodeMessage(msg)
+		m.DestinationType = &DestinationSpec_Gcloud{msg}
+		return true, err
 	default:
 		return false, nil
 	}
@@ -420,6 +446,11 @@ func _DestinationSpec_OneofSizer(msg proto.Message) (n int) {
 		n += s
 	case *DestinationSpec_Grpc:
 		s := proto.Size(x.Grpc)
+		n += 1 // tag and wire
+		n += proto.SizeVarint(uint64(s))
+		n += s
+	case *DestinationSpec_Gcloud:
+		s := proto.Size(x.Gcloud)
 		n += 1 // tag and wire
 		n += proto.SizeVarint(uint64(s))
 		n += s
@@ -499,12 +530,16 @@ type UpstreamSpec_Azure struct {
 type UpstreamSpec_Consul struct {
 	Consul *consul.UpstreamSpec `protobuf:"bytes,5,opt,name=consul,proto3,oneof"`
 }
+type UpstreamSpec_Gcloud struct {
+	Aws *gcloud.UpstreamSpec `protobuf:"bytes,6,opt,name=gcloud,proto3,oneof"`
+}
 
 func (*UpstreamSpec_Kube) isUpstreamSpec_UpstreamType()   {}
 func (*UpstreamSpec_Static) isUpstreamSpec_UpstreamType() {}
 func (*UpstreamSpec_Aws) isUpstreamSpec_UpstreamType()    {}
 func (*UpstreamSpec_Azure) isUpstreamSpec_UpstreamType()  {}
 func (*UpstreamSpec_Consul) isUpstreamSpec_UpstreamType() {}
+func (*UpstreamSpec_Gcloud) isUpstreamSpec_UpstreamType()    {}
 
 func (m *UpstreamSpec) GetUpstreamType() isUpstreamSpec_UpstreamType {
 	if m != nil {
@@ -576,6 +611,13 @@ func (m *UpstreamSpec) GetConsul() *consul.UpstreamSpec {
 	return nil
 }
 
+func (m *UpstreamSpec) GetGcloud() *gcloud.UpstreamSpec {
+	if x, ok := m.GetUpstreamType().(*UpstreamSpec_Gcloud); ok {
+		return x.Gcloud
+	}
+	return nil
+}
+
 // XXX_OneofFuncs is for the internal use of the proto package.
 func (*UpstreamSpec) XXX_OneofFuncs() (func(msg proto.Message, b *proto.Buffer) error, func(msg proto.Message, tag, wire int, b *proto.Buffer) (bool, error), func(msg proto.Message) (n int), []interface{}) {
 	return _UpstreamSpec_OneofMarshaler, _UpstreamSpec_OneofUnmarshaler, _UpstreamSpec_OneofSizer, []interface{}{
@@ -584,6 +626,7 @@ func (*UpstreamSpec) XXX_OneofFuncs() (func(msg proto.Message, b *proto.Buffer) 
 		(*UpstreamSpec_Aws)(nil),
 		(*UpstreamSpec_Azure)(nil),
 		(*UpstreamSpec_Consul)(nil),
+		(*UpstreamSpec_Gcloud)(nil),
 	}
 }
 
@@ -614,6 +657,11 @@ func _UpstreamSpec_OneofMarshaler(msg proto.Message, b *proto.Buffer) error {
 	case *UpstreamSpec_Consul:
 		_ = b.EncodeVarint(5<<3 | proto.WireBytes)
 		if err := b.EncodeMessage(x.Consul); err != nil {
+			return err
+		}
+	case *UpstreamSpec_Gcloud:
+		_ = b.EncodeVarint(2<<3 | proto.WireBytes)
+		if err := b.EncodeMessage(x.Gcloud); err != nil {
 			return err
 		}
 	case nil:
@@ -666,6 +714,14 @@ func _UpstreamSpec_OneofUnmarshaler(msg proto.Message, tag, wire int, b *proto.B
 		err := b.DecodeMessage(msg)
 		m.UpstreamType = &UpstreamSpec_Consul{msg}
 		return true, err
+	case 6: // upstream_type.gcloud
+		if wire != proto.WireBytes {
+			return true, proto.ErrInternalBadWireType
+		}
+		msg := new(gcloud.UpstreamSpec)
+		err := b.DecodeMessage(msg)
+		m.UpstreamType = &UpstreamSpec_Gcloud{msg}
+		return true, err
 	default:
 		return false, nil
 	}
@@ -697,6 +753,11 @@ func _UpstreamSpec_OneofSizer(msg proto.Message) (n int) {
 		n += s
 	case *UpstreamSpec_Consul:
 		s := proto.Size(x.Consul)
+		n += 1 // tag and wire
+		n += proto.SizeVarint(uint64(s))
+		n += s
+	case *UpstreamSpec_Gcloud:
+		s := proto.Size(x.Gcloud)
 		n += 1 // tag and wire
 		n += proto.SizeVarint(uint64(s))
 		n += s
@@ -948,6 +1009,30 @@ func (this *DestinationSpec_Aws) Equal(that interface{}) bool {
 	}
 	return true
 }
+func (this *DestinationSpec_Gcloud) Equal(that interface{}) bool {
+        if that == nil {
+                return this == nil
+        }
+
+        that1, ok := that.(*DestinationSpec_Gcloud)
+        if !ok {
+                that2, ok := that.(DestinationSpec_Gcloud)
+                if ok {
+                        that1 = &that2
+                } else {
+                        return false
+                }
+        }
+        if that1 == nil {
+                return this == nil
+        } else if this == nil {
+                return false
+        }
+        if !this.Gcloud.Equal(that1.Gcloud) {
+                return false
+        }
+        return true
+}
 func (this *DestinationSpec_Azure) Equal(that interface{}) bool {
 	if that == nil {
 		return this == nil
@@ -1133,6 +1218,30 @@ func (this *UpstreamSpec_Aws) Equal(that interface{}) bool {
 		return false
 	}
 	if !this.Aws.Equal(that1.Aws) {
+		return false
+	}
+	return true
+}
+func (this *UpstreamSpec_Gcloud) Equal(that interface{}) bool {
+	if that == nil {
+		return this == nil
+	}
+
+	that1, ok := that.(*UpstreamSpec_Gcloud)
+	if !ok {
+		that2, ok := that.(UpstreamSpec_Gcloud)
+		if ok {
+			that1 = &that2
+		} else {
+			return false
+		}
+	}
+	if that1 == nil {
+		return this == nil
+	} else if this == nil {
+		return false
+	}
+	if !this.Gcloud.Equal(that1.Gcloud) {
 		return false
 	}
 	return true

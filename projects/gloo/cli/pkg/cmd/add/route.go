@@ -10,6 +10,7 @@ import (
 	gatewayv1 "github.com/solo-io/gloo/projects/gateway/pkg/api/v1"
 	"github.com/solo-io/gloo/projects/gloo/cli/pkg/helpers"
 	"github.com/solo-io/gloo/projects/gloo/pkg/api/v1/plugins/aws"
+	"github.com/solo-io/gloo/projects/gloo/pkg/api/v1/plugins/gcloud"
 	"github.com/solo-io/gloo/projects/gloo/pkg/api/v1/plugins/rest"
 	"github.com/solo-io/gloo/projects/gloo/pkg/api/v1/plugins/transformation"
 	"github.com/solo-io/gloo/projects/gloo/pkg/defaults"
@@ -243,6 +244,15 @@ func destSpecFromInput(input options.DestinationSpec) (*v1.DestinationSpec, erro
 				Aws: &aws.DestinationSpec{
 					LogicalName:            input.Aws.LogicalName,
 					ResponseTransformation: input.Aws.ResponseTransformation,
+				},
+			},
+		}, nil
+	case input.Gcloud.LogicalName != "":
+		return &v1.DestinationSpec{
+			DestinationType: &v1.DestinationSpec_Gcloud{
+				Gcloud: &gcloud.DestinationSpec{
+					LogicalName:            input.Gcloud.LogicalName,
+					ResponseTransformation: input.Gcloud.ResponseTransformation,
 				},
 			},
 		}, nil

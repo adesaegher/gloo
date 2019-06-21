@@ -35,6 +35,12 @@ func AddRouteFlags(set *pflag.FlagSet, route *options.InputRoute) {
 		"unescape JSON returned by this lambda function (useful if the response is not intended to be JSON formatted, "+
 			"e.g. in the case of static content (images, HTML, etc.) being served by Lambda")
 
+	set.StringVarP(&route.Destination.DestinationSpec.Gcloud.LogicalName, "gcloud-function-name", "a", "",
+		"logical name of the Google Cloud Function to invoke with this route. use if destination is an gcloud upstream")
+	set.BoolVarP(&route.Destination.DestinationSpec.Gcloud.ResponseTransformation, "gcloud-unescape", "", false,
+		"unescape JSON returned by this  Google Cloud Function (useful if the response is not intended to be JSON formatted, "+
+			"e.g. in the case of static content (images, HTML, etc.) being served by Lambda")
+
 	set.StringVarP(&route.Destination.DestinationSpec.Rest.FunctionName, "rest-function-name", "f", "",
 		"name of the REST function to invoke with this route. use if destination has a REST service spec")
 	set.StringSliceVar(&route.Destination.DestinationSpec.Rest.Parameters.Entries, "rest-parameters", nil,
