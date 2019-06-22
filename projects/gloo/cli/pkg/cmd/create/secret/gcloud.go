@@ -46,14 +46,14 @@ func gcloudCmd(opts *options.Options) *cobra.Command {
 
 	flags := cmd.Flags()
 	flags.StringVar(&input.AccessKey, "access-key", flagDefaultGcloudAccessKey, "gcloud access key")
-	flags.StringVar(&input.JsonKey, "secret-key", flagDefaultGcloudJsonKey, "gcloud secret key")
+	flags.StringVar(&input.JsonKey, "json-key", flagDefaultGcloudJsonKey, "gcloud json key")
 
 	return cmd
 }
 
 const (
 	gcloudPromptAccessKey = "Enter Gcloud Access Key ID (leave empty to read credentials from ~/.gcloud/credentials): "
-	gcloudPromptJsonKey = "Enter Gcloud Secret Key (leave empty to read credentials from ~/.gcloud/credentials): "
+	gcloudPromptJsonKey = "Enter Gcloud Json Key"
 )
 
 func GcloudSecretArgsInteractive(meta *core.Metadata, input *options.GcloudSecret) error {
