@@ -26,7 +26,7 @@ import (
 
 const (
 	// filter info
-	filterName  = "io.solo.gcloud_gfunc"
+	filterName  = "io.solo.gcloudfunc"
 	pluginStage = plugins.OutAuth
 
 	// cluster info
@@ -141,7 +141,7 @@ func (p *plugin) ProcessRoute(params plugins.Params, in *v1.Route, out *envoyrou
 		// get function
 		logicalName := gcloudDestinationSpec.Gcloud.LogicalName
 		for _, gfuncFunc := range gfuncSpec.GfuncFunctions {
-			if gfuncFunc.LogicalName == logicalName {
+			if gfuncFunc.GfuncFunctionName == logicalName {
 
 				gfuncRouteFunc := &GfuncPerRoute{
 					Name:      gfuncFunc.GfuncFunctionName,
