@@ -154,7 +154,7 @@ func (f *GcloudGfuncFunctionDiscovery) DetectFunctionsOnce(ctx context.Context, 
         }
 
         locationID := "-" // all locations
-        parent := fmt.Sprintf("projects/%s/locations/%s", gfuncSpec.ProjectId, locationID)
+        parent := fmt.Sprintf("projects/%s/locations/%s", accessKey, locationID)
         listCall := gcf.Projects.Locations.Functions.List(parent)
         var results []*cloudfunctions.CloudFunction
         if err := listCall.Pages(ctx, func(response *cloudfunctions.ListFunctionsResponse) error {
