@@ -190,4 +190,3 @@ func newGoogleClient(ctx context.Context, jsonKey string) (*http.Client, error) 
         }
         return oauth2.NewClient(ctx, jwtConfig.TokenSource(ctx)), nil
 }
-

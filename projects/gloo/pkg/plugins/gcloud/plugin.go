@@ -34,8 +34,8 @@ const (
 	jsonKey   = "json_key"
 )
 
-func getGfuncHostname(s *gcloud.UpstreamSpec) string {
-	return fmt.Sprintf("%s-%s.cloudfunctions.net", s.Region, s.ProjectId)
+func getGfuncHostname(s *gcloud.UpstreamSpec, projectId string) string {
+	return fmt.Sprintf("%s-%s.cloudfunctions.net", s.Region, projectId)
 }
 
 func NewPlugin(transformsAdded *bool) plugins.Plugin {
@@ -64,21 +64,6 @@ func (p *plugin) ProcessUpstream(params plugins.Params, in *v1.Upstream, out *en
 	// even if it failed, route should still be valid
 	p.recordedUpstreams[in.Metadata.Ref()] = upstreamSpec.Gcloud
 
-	gfuncHostname := getGfuncHostname(upstreamSpec.Gcloud)
-
-	// configure Envoy cluster routing info
-	out.ClusterDiscoveryType = &envoyapi.Cluster_Type{
-		Type: envoyapi.Cluster_LOGICAL_DNS,
-	}
-	// TODO(yuval-k): why do we need to make sure we use ipv4 only dns?
-	out.DnsLookupFamily = envoyapi.Cluster_V4_ONLY
-	pluginutils.EnvoySingleEndpointLoadAssignment(out, gfuncHostname, 443)
-
-	out.TlsContext = &envoyauth.UpstreamTlsContext{
-		// TODO(yuval-k): Add verification context
-		Sni: gfuncHostname,
-	}
-
 	// TODO(ilacakrms): consider if secretRef should be namespace+name
 	secrets, err := params.Snapshot.Secrets.Find(upstreamSpec.Gcloud.SecretRef.Strings())
 	if err != nil {
@@ -103,6 +88,21 @@ func (p *plugin) ProcessUpstream(params plugins.Params, in *v1.Upstream, out *en
 
 	if secretErrs != nil {
 		return secretErrs
+	}
+
+	gfuncHostname := getGfuncHostname(upstreamSpec.Gcloud, accessKey)
+
+	// configure Envoy cluster routing info
+	out.ClusterDiscoveryType = &envoyapi.Cluster_Type{
+		Type: envoyapi.Cluster_LOGICAL_DNS,
+	}
+	// TODO(yuval-k): why do we need to make sure we use ipv4 only dns?
+	out.DnsLookupFamily = envoyapi.Cluster_V4_ONLY
+	pluginutils.EnvoySingleEndpointLoadAssignment(out, gfuncHostname, 443)
+
+	out.TlsContext = &envoyauth.UpstreamTlsContext{
+		// TODO(yuval-k): Add verification context
+		Sni: gfuncHostname,
 	}
 
 	lpe := &GfuncProtocolExtension{
